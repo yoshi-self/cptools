@@ -24,6 +24,8 @@ class CompetitiveProgrammingSetup():
             self.type = 'atcoder'
         elif 'codeforces.com' in self.url:
             self.type = 'codeforces'
+        elif 'u-aizu.ac.jp' in self.url:
+            self.type = 'aoj'
 
     def run(self):
         self.__retrieve_examples()
@@ -42,6 +44,8 @@ class CompetitiveProgrammingSetup():
             self.__parse_atcoder_examples(content)
         elif self.type == 'codeforces':
             self.__parse_codeforces_examples(content)
+        elif self.type == 'aoj':
+            self.__parse_aoj_examples(content)
 
     def __parse_atcoder_examples(self, content):
         r = re.compile(r'Sample Input.*?<pre>(.*?)</pre>.*?Sample Output.*?<pre>(.*?)</pre>', re.MULTILINE|re.DOTALL)
@@ -55,6 +59,16 @@ class CompetitiveProgrammingSetup():
 
     def __parse_codeforces_examples(self, content):
         r = re.compile('<div class="input">.*?<pre>\n(.*?)</pre>.*?<div class="output">.*?<pre>\n(.*?)</pre>', re.MULTILINE|re.DOTALL)
+        match_iter = r.finditer(content)
+        for match in match_iter:
+            if match.lastindex < 2:
+                raise Exception("Failed to parse examples")
+            example_input =  match.group(1).replace('\r\n', '\n')
+            example_output =  match.group(2).replace('\r\n', '\n');
+            self.examples.append(Example(example_input, example_output))
+
+    def __parse_aoj_examples(self, content):
+        r = re.compile('Sample Input.*?<pre>\n(.*?)</pre>.*?Sample Output.*?<pre>\n(.*?)</pre>', re.MULTILINE|re.DOTALL)
         match_iter = r.finditer(content)
         for match in match_iter:
             if match.lastindex < 2:
