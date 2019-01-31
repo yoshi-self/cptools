@@ -7,7 +7,7 @@ import argparse
 
 class CompetitiveProgrammingTest():
 
-    def __init__(self, source, test=None):
+    def __init__(self, source, test=None, limit=2):
         self.source = source
 
         m = re.match(r'^([^\.]*?)\.(.*?)$', source)
@@ -23,7 +23,7 @@ class CompetitiveProgrammingTest():
         else:
             self.test = self.name + '.txt'
 
-        self.timeout = 2
+        self.timeout = limit
         self.inputs = []
         self.outputs = []
 
@@ -100,12 +100,9 @@ if __name__ == '__main__':
     parser.add_argument('source')
     parser.add_argument('--test', '-t', default=None, required=False)
     parser.add_argument('--build', '-b', action='store_true')
+    parser.add_argument('--limit', '-l', type=int, default=2, required=False)
     ns = parser.parse_args()
 
-    if ns.test is not None:
-        test = sys.argv[2]
-        cptest = CompetitiveProgrammingTest(ns.source, ns.test)
-    else:
-        cptest = CompetitiveProgrammingTest(ns.source)
+    cptest = CompetitiveProgrammingTest(ns.source, ns.test, ns.limit)
 
     cptest.run(ns.build)
