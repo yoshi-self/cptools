@@ -48,13 +48,17 @@ class CompetitiveProgrammingSetup():
             self.__parse_aoj_examples(content)
 
     def __parse_atcoder_examples(self, content):
-        r = re.compile(r'Sample Input.*?<pre>(.*?)</pre>.*?Sample Output.*?<pre>(.*?)</pre>', re.MULTILINE|re.DOTALL)
+        r = re.compile(r'(Sample Input|入力例).*?<pre>(.*?)</pre>.*?(Sample Output|出力例).*?<pre>(.*?)</pre>', re.MULTILINE|re.DOTALL)
         match_iter = r.finditer(content)
         for match in match_iter:
             if match.lastindex < 2:
                 raise Exception("Failed to parse examples")
-            example_input =  match.group(1).replace('\r\n', '\n')
-            example_output =  match.group(2).replace('\r\n', '\n');
+            example_input =  match.group(2).replace('\r\n', '\n')
+            if example_input[0] == '\n':
+                example_input = example_input[1:]
+            example_output =  match.group(4).replace('\r\n', '\n');
+            if example_output[0] == '\n':
+                example_output = example_output[1:]
             self.examples.append(Example(example_input, example_output))
 
     def __parse_codeforces_examples(self, content):
